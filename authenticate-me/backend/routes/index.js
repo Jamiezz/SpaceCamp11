@@ -7,10 +7,6 @@ const { setTokenCookie } = require('../utils/auth.js');
 const { User } = require('../db/models');
 
 
-router.get('/hello/world', function(req, res) {
-    res.cookie('XSRF-TOKEN', req.csrfToken());
-    res.send('Hello World!')
-})
 
 
 
