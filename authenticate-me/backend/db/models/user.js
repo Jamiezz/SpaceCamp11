@@ -1,6 +1,6 @@
 'use strict';
 const bcrypt = require('bcryptjs');
-const { validator } = require("sequelize");
+const { Validator } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         len: [4, 30],
         isNotEmail(value) {
-          if (validator.isEmail(value)) {
+          if (Validator.isEmail(value)) {
             throw new Error('Cannot be an email.')
           }
         }
@@ -65,12 +65,26 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
-  User.prototype.toSafeObject = function() {
+  User.prototype.toSafeObject = function () {
     const { id, username, email } = this;
     return { id, username, email }
   }
   User.prototype.validatePassword = function (password) {
     return bcrypt.compareSync(password, this.hashedPassword.toString());
-   };
+  };
+
+  User.getCurrentUserById = async function (id) {
+    return await User.scope('currentUser').findByPk(id);
+  };
+
+  User.signup = async function ({ username, email, password }) {
+    const hashedPassword = bcrypt.hashSync(password);
+    const user = await User.create({
+      username,
+      email,
+      hashedPassword,
+    });
+    return await User.scope('currentUser').findByPk(user.id);
+  };
   return User;
 };
