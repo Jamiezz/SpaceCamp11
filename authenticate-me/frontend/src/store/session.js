@@ -16,6 +16,28 @@ const removeUser = () => {
     }
 }
 
+export const logout = () => async (dispatch) => {
+    const response = await fetch('/api/session', {
+      method: 'DELETE',
+    });
+    dispatch(removeUser());
+    return response;
+  };
+
+export const signup = (user) => async (dispatch) => {
+    const { username, email, password } = user;
+    const response = await fetch("/api/users", {
+      method: "POST",
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+      }),
+    });
+    dispatch(setUser(response.data.user));
+    return response;
+  };
+
 export const login = (user) => async (dispatch) => {
     const { credential, password } = user
     const response = await csrfFetch('/api/session', {
