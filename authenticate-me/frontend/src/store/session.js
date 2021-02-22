@@ -16,6 +16,15 @@ const removeUser = () => {
     }
 }
 
+export const restoreUser = () => async dispatch => {
+    const res = await fetch('/api/session');
+    const data = await res.json()
+    console.log("data", data)
+
+    dispatch(setUser(data.user));
+    return res;
+  };
+
 export const logout = () => async (dispatch) => {
     const response = await fetch('/api/session', {
       method: 'DELETE',
